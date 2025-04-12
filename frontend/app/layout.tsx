@@ -32,7 +32,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body className="min-h-screen">
+        <main className="max-w-md mx-auto w-full min-h-screen border">{children}</main>
+      </body>
     </html>
   );
 }
