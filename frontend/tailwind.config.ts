@@ -17,8 +17,6 @@ export default {
           DEFAULT: '#E5F4D5',
           strong: '#5C7A57',
         },
-        // background: 'var(--background)',
-        // foreground: 'var(--foreground)',
       },
     },
   },
