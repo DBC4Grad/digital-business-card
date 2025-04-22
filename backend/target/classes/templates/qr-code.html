@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR 코드</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-6 offset-md-3 text-center">
+            <h2>내 명함 QR 코드</h2>
+            <p class="text-muted mb-4">이 QR 코드를 스캔하면 내 명함 정보를 공유할 수 있습니다.</p>
+
+            <!-- QR 코드 이미지 표시 -->
+            <div class="mb-4">
+                <img th:src="@{'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=' + ${personal.qrHash}}"
+                     alt="QR Code" class="img-fluid border p-2" style="max-width: 250px;">
+            </div>
+
+            <p>QR 해시: <span th:text="${personal.qrHash}" class="text-muted"></span></p>
+
+            <div class="mt-4">
+                <a href="/home" class="btn btn-primary">홈으로 돌아가기</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

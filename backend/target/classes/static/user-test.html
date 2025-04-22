@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>User Registration</title>
+</head>
+<body>
+<h2>User Registration</h2>
+<form id="userForm">
+    <div>
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username" required>
+    </div>
+    <div>
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required>
+    </div>
+    <div>
+        <button type="submit">Register</button>
+    </div>
+</form>
+<div id="result"></div>
+
+<script>
+    document.getElementById('userForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const username = document.getElementById('username').value;
+        const password = document.getElementById('password').value;
+
+        try {
+            const response = await fetch('/api/users', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ username, password })
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                document.getElementById('result').innerHTML =
+                    `<p style="color:green">User created successfully! ID: ${data.id}</p>
+                         <p><a href="/login">Go to login</a></p>`;
+            } else {
+                const error = await response.text();
+                document.getElementById('result').innerHTML =
+                    `<p style="color:red">Error: ${error}</p>`;
+            }
+        } catch (error) {
+            document.getElementById('result').innerHTML =
+                `<p style="color:red">Error: ${error.message}</p>`;
+        }
+    });
+</script>
+</body>
+</html>
