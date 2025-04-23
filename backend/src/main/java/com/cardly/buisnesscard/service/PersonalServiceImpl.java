@@ -33,6 +33,13 @@ public class PersonalServiceImpl implements PersonalService {
     }
 
     @Override
+    public Personal getPersonalCardByUsername(String username) {
+        User user = userService.getUserByUsername(username);
+        return personalRepository.findByUser(user)
+                .orElseThrow(() -> new IllegalArgumentException("Personal card not found"));
+    }
+
+    @Override
     public Personal getPersonalCardByQrHash(String qrHash) {
         return personalRepository.findByQrHash(qrHash)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid QR code"));
