@@ -1,50 +1,89 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Login - Business Card App</title>
-  <style>
-    body { font-family: Arial, sans-serif; background: #f9f9f9; }
-    .login-container { width: 320px; margin: 80px auto; padding: 32px; background: #fff; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);}
-    .login-container h2 { text-align: center; margin-bottom: 24px; }
-    .input-group { margin-bottom: 18px; }
-    .input-group label { display: block; margin-bottom: 6px; }
-    .input-group input { width: 100%; padding: 8px; box-sizing: border-box; }
-    .error-message { color: red; margin-bottom: 12px; }
-    .success-message { color: green; margin-bottom: 12px; }
-    button { width: 100%; padding: 10px; background: #1976d2; color: #fff; border: none; border-radius: 4px; font-size: 16px; }
-    button:hover { background: #1259a7; }
-  </style>
-</head>
-<body>
-<div class="login-container">
-  <h2>로그인</h2>
-  <!-- Spring Security가 /login?error, /login?logout 로 redirect할 때 메시지 표시 -->
-  <div id="msg"></div>
-  <form method="post" action="/login">
-    <div class="input-group">
-      <label for="username">아이디</label>
-      <input type="text" id="username" name="username" required autocomplete="username">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Login - Business Card App</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background: #f9f9f9;
+      }
+      .login-container {
+        width: 320px;
+        margin: 80px auto;
+        padding: 32px;
+        background: #fff;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      }
+      .login-container h2 {
+        text-align: center;
+        margin-bottom: 24px;
+      }
+      .input-group {
+        margin-bottom: 18px;
+      }
+      .input-group label {
+        display: block;
+        margin-bottom: 6px;
+      }
+      .input-group input {
+        width: 100%;
+        padding: 8px;
+        box-sizing: border-box;
+      }
+      .error-message {
+        color: red;
+        margin-bottom: 12px;
+      }
+      .success-message {
+        color: green;
+        margin-bottom: 12px;
+      }
+      button {
+        width: 100%;
+        padding: 10px;
+        background: #1976d2;
+        color: #fff;
+        border: none;
+        border-radius: 4px;
+        font-size: 16px;
+      }
+      button:hover {
+        background: #1259a7;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="login-container">
+      <h2>로그인</h2>
+      <!-- Spring Security가 /login?error, /login?logout 로 redirect할 때 메시지 표시 -->
+      <div id="msg"></div>
+      <form method="post" action="/login">
+        <div class="input-group">
+          <label for="username">아이디</label>
+          <input type="text" id="username" name="username" required autocomplete="username" />
+        </div>
+        <div class="input-group">
+          <label for="password">비밀번호</label>
+          <input type="password" id="password" name="password" required autocomplete="current-password" />
+        </div>
+        <button type="submit">로그인</button>
+      </form>
+      <div style="margin-top: 14px; text-align: center">
+        <a href="/user-test.html">회원가입</a>
+      </div>
     </div>
-    <div class="input-group">
-      <label for="password">비밀번호</label>
-      <input type="password" id="password" name="password" required autocomplete="current-password">
-    </div>
-    <button type="submit">로그인</button>
-  </form>
-  <div style="margin-top:14px; text-align:center;">
-    <a href="/user-test.html">회원가입</a>
-  </div>
-</div>
-<script>
-  // URL 파라미터로 error, logout을 체크해 메시지 표시
-  const params = new URLSearchParams(window.location.search);
-  if (params.has('error')) {
-    document.getElementById('msg').innerHTML = '<div class="error-message">아이디 또는 비밀번호가 잘못되었습니다.</div>';
-  }
-  if (params.has('logout')) {
-    document.getElementById('msg').innerHTML = '<div class="success-message">정상적으로 로그아웃되었습니다.</div>';
-  }
-</script>
-</body>
+    <script>
+      // URL 파라미터로 error, logout을 체크해 메시지 표시
+      const params = new URLSearchParams(window.location.search);
+      if (params.has('error')) {
+        document.getElementById('msg').innerHTML =
+          '<div class="error-message">아이디 또는 비밀번호가 잘못되었습니다.</div>';
+      }
+      if (params.has('logout')) {
+        document.getElementById('msg').innerHTML = '<div class="success-message">정상적으로 로그아웃되었습니다.</div>';
+      }
+    </script>
+  </body>
 </html>
