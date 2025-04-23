@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <title>디지털 명함 홈</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <style>
+      .horizontal-business-card {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        background: linear-gradient(90deg, #f8fafc 0%, #e0e7ef 100%);
+        border-radius: 18px;
+        box-shadow: 0 4px 24px rgba(60, 80, 140, 0.09), 0 2px 8px rgba(0, 0, 0, 0.1);
+        padding: 26px 36px;
+        max-width: 700px;
+        min-height: 180px;
+        margin: 40px auto 32px auto;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        color: #1a233a;
+        border: 2px solid #e4eaf2;
+        position: relative;
+      }
+      .horizontal-business-card .profile-area {
+        flex: 0 0 130px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-right: 36px;
+      }
+      .horizontal-business-card .profile-image,
+      .horizontal-business-card .profile-emoji {
+        width: 110px;
+        height: 110px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 3px solid #6b7fd7;
+        background: #e4eaf2;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 3.6rem;
+        color: #6b7fd7;
+        margin-bottom: 8px;
+      }
+      .horizontal-business-card .info-area {
+        flex: 1;
+        min-width: 0;
+      }
+      .horizontal-business-card .full-name {
+        font-size: 1.8rem;
+        font-weight: 700;
+        margin-bottom: 4px;
+        letter-spacing: 1px;
+      }
+      .horizontal-business-card .position {
+        font-size: 1.1rem;
+        color: #5a6a9e;
+        margin-bottom: 10px;
+        font-style: italic;
+      }
+      .horizontal-business-card .contact-row {
+        display: flex;
+        gap: 28px;
+        margin-bottom: 4px;
+        flex-wrap: wrap;
+      }
+      .horizontal-business-card .contact-row div {
+        min-width: 0;
+        word-break: break-all;
+      }
+      .horizontal-business-card .label {
+        font-weight: 600;
+        color: #334e68;
+        margin-right: 3px;
+      }
+      .horizontal-business-card .btn-group {
+        margin-top: 14px;
+      }
+      .horizontal-business-card .btn {
+        margin-right: 10px;
+        padding: 7px 22px;
+        font-weight: 600;
+        border-radius: 28px;
+        transition: background-color 0.3s;
+      }
+      .horizontal-business-card .btn-primary {
+        background-color: #6b7fd7;
+        border: none;
+        color: white;
+      }
+      .horizontal-business-card .btn-primary:hover {
+        background-color: #4257b2;
+      }
+      .horizontal-business-card .btn-secondary {
+        background-color: #e4eaf2;
+        border: none;
+        color: #334e68;
+      }
+      .horizontal-business-card .btn-secondary:hover {
+        background-color: #c7d1e6;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container mt-4">
+      <h2 class="text-center mb-4">Cardly</h2>
+      <!-- 메시지 표시 -->
+      <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
+      <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}"></div>
+
+      <!-- 탭 네비게이션 -->
+      <ul class="nav nav-tabs" id="myTab" role="tablist">
+        <li class="nav-item" role="presentation">
+          <button
+            class="nav-link active"
+            id="personal-tab"
+            data-bs-toggle="tab"
+            data-bs-target="#personal"
+            type="button"
+            role="tab"
+          >
+            내 명함
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="saved-tab" data-bs-toggle="tab" data-bs-target="#saved" type="button" role="tab">
+            명함 지갑
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button
+            class="nav-link"
+            id="settings-tab"
+            data-bs-toggle="tab"
+            data-bs-target="#settings"
+            type="button"
+            role="tab"
+          >
+            설정
+          </button>
+        </li>
+      </ul>
+
+      <div class="tab-content" id="myTabContent">
+        <!-- 내 명함 -->
+        <div class="tab-pane fade show active" id="personal" role="tabpanel">
+          <div th:if="${hasPersonalCard}">
+            <div class="horizontal-business-card">
+              <div class="profile-area">
+                <img
+                  th:if="${personalCard.profileImage}"
+                  th:src="${personalCard.profileImage}"
+                  class="profile-image"
+                  alt="프로필 이미지"
+                />
+                <span th:unless="${personalCard.profileImage}" class="profile-emoji" role="img" aria-label="person"
+                  >🧑</span
+                >
+              </div>
+              <div class="info-area">
+                <div class="full-name" th:text="${personalCard.firstName + ' ' + personalCard.lastName}">이름</div>
+                <div class="position" th:text="${personalCard.position + ' @ ' + personalCard.company}">
+                  직책 / 회사
+                </div>
+                <div class="contact-row">
+                  <div>
+                    <span class="label">이메일</span> <span th:text="${personalCard.email}">email@example.com</span>
+                  </div>
+                  <div>
+                    <span class="label">연락처</span> <span th:text="${personalCard.phoneContact}">010-1234-5678</span>
+                  </div>
+                  <div>
+                    <span class="label">회사 연락처</span>
+                    <span th:text="${personalCard.officeContact}">02-123-4567</span>
+                  </div>
+                </div>
+                <div class="btn-group mt-2">
+                  <a th:href="@{/personal/edit}" class="btn btn-primary">명함 수정</a>
+                  <a th:href="@{/personal/qr}" class="btn btn-secondary">QR 코드</a>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div th:unless="${hasPersonalCard}" class="text-center mt-4">
+            <p>아직 개인 명함이 없습니다.</p>
+            <a th:href="@{/personal/create}" class="btn btn-primary">명함 만들기</a>
+          </div>
+        </div>
+        <!-- 타인명함 -->
+        <div class="tab-pane fade" id="saved" role="tabpanel">
+          <!-- QR 해시값 직접 입력 폼 -->
+          <div class="mb-4 mt-3">
+            <form th:action="@{/saved/add-by-hash}" method="post" class="d-flex">
+              <input type="text" name="qrHash" class="form-control me-2" placeholder="QR 해시값 입력" required />
+              <button type="submit" class="btn btn-primary">명함 추가</button>
+            </form>
+          </div>
+          <div th:if="${#lists.isEmpty(savedCards)}" class="text-center mt-4">
+            <p>저장된 명함이 없습니다.</p>
+          </div>
+          <div th:unless="${#lists.isEmpty(savedCards)}" class="row">
+            <div th:each="card : ${savedCards}" class="col-md-6 col-lg-4 mb-4">
+              <div class="card h-100">
+                <div class="card-body">
+                  <h5 th:text="${card.firstName + ' ' + card.lastName}">이름</h5>
+                  <p th:text="${card.position + ' @ ' + card.company}">직책/회사</p>
+                  <p><strong>이메일:</strong> <span th:text="${card.email}"></span></p>
+                  <p><strong>연락처:</strong> <span th:text="${card.phoneContact}"></span></p>
+                  <p><strong>회사 연락처:</strong> <span th:text="${card.officeContact}"></span></p>
+                </div>
+                <div class="card-footer text-center">
+                  <form th:action="@{/saved/delete/{id}(id=${card.id})}" method="post">
+                    <button type="submit" class="btn btn-danger btn-sm">삭제</button>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- 설정 -->
+        <div class="tab-pane fade" id="settings" role="tabpanel">
+          <div class="card mt-4">
+            <div class="card-header">계정 정보</div>
+            <div class="card-body">
+              <form th:action="@{/user/update}" method="post">
+                <div class="mb-3">
+                  <label for="username" class="form-label">사용자명</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="username"
+                    name="username"
+                    th:value="${user.username}"
+                    readonly
+                  />
+                </div>
+                <button type="submit" class="btn btn-primary">저장</button>
+              </form>
+            </div>
+          </div>
+          <div class="card mt-4">
+            <div class="card-header">비밀번호 변경</div>
+            <div class="card-body">
+              <form th:action="@{/user/password}" method="post">
+                <div class="mb-3">
+                  <label for="currentPassword" class="form-label">현재 비밀번호</label>
+                  <input type="password" class="form-control" name="currentPassword" required />
+                </div>
+                <div class="mb-3">
+                  <label for="newPassword" class="form-label">새 비밀번호</label>
+                  <input type="password" class="form-control" name="newPassword" required />
+                </div>
+                <div class="mb-3">
+                  <label for="confirmPassword" class="form-label">새 비밀번호 확인</label>
+                  <input type="password" class="form-control" name="confirmPassword" required />
+                </div>
+                <button type="submit" class="btn btn-primary">비밀번호 변경</button>
+              </form>
+            </div>
+          </div>
+          <div class="text-center mt-4">
+            <form th:action="@{/logout}" method="post">
+              <button type="submit" class="btn btn-danger">로그아웃</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>
