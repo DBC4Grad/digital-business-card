@@ -38,24 +38,4 @@ public class RootRedirectController {
     public String login() {
         return "redirect:http://localhost:3000/login";
     }
-
-//    @GetMapping("/home")
-//    public String home(Model model, Principal principal) {
-//
-//        String username = principal.getName();
-//        User user = userRepository.findByUsername(username)
-//                .orElseThrow(() -> new IllegalArgumentException("User not found"));
-//
-//        Optional<Personal> personalCard = personalRepository.findByUser(user);
-//        List<Saved> savedCards = savedRepository.findByUserId(user.getId());
-//
-//        model.addAttribute("user", user);
-//        model.addAttribute("hasPersonalCard", personalCard.isPresent());
-//        if (personalCard.isPresent()) {
-//            model.addAttribute("personalCard", personalCard.get());
-//        }
-//        model.addAttribute("savedCards", savedCards);
-//
-//        return "home";  // home.html 템플릿 반환
-//    }
 }

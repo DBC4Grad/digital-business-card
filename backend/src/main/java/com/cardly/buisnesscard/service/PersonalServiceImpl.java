@@ -26,7 +26,7 @@ public class PersonalServiceImpl implements PersonalService {
     }
 
     @Override
-    public Personal getPersonalCardByUser(Long userId) {
+    public Personal getPersonalCardByUserId(Long userId) {
         User user = userService.getUserById(userId);
         return personalRepository.findByUser(user)
                 .orElseThrow(() -> new IllegalArgumentException("Personal card not found"));

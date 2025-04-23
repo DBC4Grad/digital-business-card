@@ -24,15 +24,15 @@ public class UserSettingsController {
         this.passwordEncoder = passwordEncoder;
     }
 
-    // 사용자 정보 업데이트
-    @PostMapping("/update")
-    public ResponseEntity<?> updateUser(@RequestParam String username, Principal principal) {
-        String currentUsername = principal.getName();
-        User user = userRepository.findByUsername(currentUsername)
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
-
-        return ResponseEntity.ok().build();
-    }
+//    // 사용자 정보 업데이트
+//    @PostMapping("/update")
+//    public ResponseEntity<?> updateUser(@RequestParam String username, Principal principal) {
+//        String currentUsername = principal.getName();
+//        User user = userRepository.findByUsername(currentUsername)
+//                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+//
+//        return ResponseEntity.ok().build();
+//    }
 
     // 비밀번호 변경
     @PostMapping("/password")

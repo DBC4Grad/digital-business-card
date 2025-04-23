@@ -11,10 +11,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.security.Principal;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/saved")
@@ -23,18 +25,27 @@ public class SavedController {
     private final SavedRepository savedRepository;
     private final UserRepository userRepository;
     private final PersonalRepository personalRepository;
+    private final SavedService savedService;
 
     public SavedController(SavedRepository savedRepository,
                            UserRepository userRepository,
-                           PersonalRepository personalRepository) {
+                           PersonalRepository personalRepository, SavedService savedService) {
         this.savedRepository = savedRepository;
         this.userRepository = userRepository;
         this.personalRepository = personalRepository;
+        this.savedService = savedService;
     }
 
-    // QR 코드로 명함 추가
-    @GetMapping("/scan/{qrHash}")
-    public ResponseEntity<?> scanQrCode(@PathVariable String qrHash, Principal principal) {
+    // 사용자의 모든 타인 명함 조회
+    @GetMapping("/{userId}")
+    public ResponseEntity<?> getAllSavedCards(@PathVariable Long userId) {
+        List<Saved> savedCards = savedService.getAllSavedCardsByUserId(userId);
+        return ResponseEntity.ok(savedCards);
+    }
+
+    // QR 코드로 타인 명함 추가
+    @PostMapping("/{qrHash}")
+    public ResponseEntity<?> createSavedCardByQRCode(@PathVariable String qrHash, Principal principal) {
         String username = principal.getName();
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
@@ -67,29 +78,41 @@ public class SavedController {
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/add-by-hash")
-    public ResponseEntity<?> addSavedCardByHash(@RequestParam String qrHash, Principal principal, RedirectAttributes redirectAttributes) {
-        String username = principal.getName();
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+    // username 으로 타인 명함 추가
+    @PostMapping("/by-username")
+    public ResponseEntity<?> createSavedCardByUsername(
+            @RequestParam String username,
+            Principal principal) {
 
-        // QR 해시값으로 개인 명함 찾기
-        Personal personalCard = personalRepository.findByQrHash(qrHash).orElse(null);
-        if (personalCard == null) {
-            redirectAttributes.addFlashAttribute("errorMessage", "유효하지 않은 QR 해시값입니다.");
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
+        String currentUsername = principal.getName();
+        User currentUser = userRepository.findByUsername(currentUsername)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.UNAUTHORIZED,
+                        "로그인이 필요합니다"
+                ));
 
-        // 이미 저장된 명함인지 체크
-        boolean exists = savedRepository.existsBySourceQrHashAndUserId(qrHash, user.getId());
+        User targetUser = userRepository.findByUsername(username)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "존재하지 않는 사용자입니다"
+                ));
+
+        Personal personalCard = personalRepository.findByUser(targetUser)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "해당 사용자는 명함을 등록하지 않았습니다"
+                ));
+
+        boolean exists = savedRepository.existsBySourceQrHashAndUserId(
+                personalCard.getQrHash(),
+                currentUser.getId()
+        );
         if (exists) {
-            redirectAttributes.addFlashAttribute("errorMessage", "이미 저장된 명함입니다.");
             return ResponseEntity.status(HttpStatus.CONFLICT).build();
         }
 
-        // 새 저장 명함 생성
         Saved saved = new Saved();
-        saved.setUser(user);
+        saved.setUser(currentUser);
         saved.setFirstName(personalCard.getFirstName());
         saved.setLastName(personalCard.getLastName());
         saved.setCompany(personalCard.getCompany());
@@ -98,15 +121,14 @@ public class SavedController {
         saved.setPhoneContact(personalCard.getPhoneContact());
         saved.setOfficeContact(personalCard.getOfficeContact());
         saved.setProfileImage(personalCard.getProfileImage());
-        saved.setSourceQrHash(qrHash);
+        saved.setSourceQrHash(personalCard.getQrHash());
 
-        savedRepository.save(saved);
+        Saved savedEntity = savedRepository.save(saved);
 
-        redirectAttributes.addFlashAttribute("successMessage", "명함이 성공적으로 저장되었습니다.");
-        return ResponseEntity.ok().build();
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    // 저장된 명함 삭제
+    // 타인 명함 삭제
     @PostMapping("/delete/{savedId}")
     public ResponseEntity<?> deleteSavedCard(@PathVariable Long savedId, Principal principal) {
         String username = principal.getName();

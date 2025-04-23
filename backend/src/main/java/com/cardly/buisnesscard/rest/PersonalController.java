@@ -4,9 +4,9 @@ import com.cardly.buisnesscard.entity.Personal;
 import com.cardly.buisnesscard.entity.User;
 import com.cardly.buisnesscard.repository.PersonalRepository;
 import com.cardly.buisnesscard.repository.UserRepository;
+import com.cardly.buisnesscard.service.PersonalService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
@@ -18,20 +18,22 @@ public class PersonalController {
 
     private final PersonalRepository personalRepository;
     private final UserRepository userRepository;
+    private final PersonalService personalService;
 
-    public PersonalController(PersonalRepository personalRepository, UserRepository userRepository) {
+    public PersonalController(PersonalRepository personalRepository, UserRepository userRepository, PersonalService personalService) {
         this.personalRepository = personalRepository;
         this.userRepository = userRepository;
+        this.personalService = personalService;
     }
 
-//    @GetMapping("/create")
-//    public String createForm(Model model) {
-//        model.addAttribute("personal", new Personal());
-//        return "personal-form";
-//    }
+    @GetMapping("/{userId}")
+    public ResponseEntity<Personal> getPersonalCard(@PathVariable Long userId) {
+        Personal personal = personalService.getPersonalCardByUserId(userId);
+        return ResponseEntity.ok().build();
+    }
 
     @PostMapping("/create")
-    public ResponseEntity<Personal> createPersonal(@ModelAttribute Personal personal, Principal principal) {
+    public ResponseEntity<Personal> createPersonalCard(@ModelAttribute Personal personal, Principal principal) {
         String username = principal.getName();
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
@@ -44,21 +46,8 @@ public class PersonalController {
         return ResponseEntity.ok().build();
     }
 
-//    @GetMapping("/edit")
-//    public String editForm(Model model, Principal principal) {
-//        String username = principal.getName();
-//        User user = userRepository.findByUsername(username)
-//                .orElseThrow(() -> new IllegalArgumentException("User not found"));
-//
-//        Personal personal = personalRepository.findByUser(user)
-//                .orElseThrow(() -> new IllegalArgumentException("Personal card not found"));
-//
-//        model.addAttribute("personal", personal);
-//        return "personal-form";
-//    }
-
     @PostMapping("/edit")
-    public ResponseEntity<Personal> updatePersonal(@ModelAttribute Personal personal, Principal principal) {
+    public ResponseEntity<Personal> updatePersonalCard(@ModelAttribute Personal personal, Principal principal) {
         String username = principal.getName();
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
@@ -66,7 +55,6 @@ public class PersonalController {
         Personal existingPersonal = personalRepository.findByUser(user)
                 .orElseThrow(() -> new IllegalArgumentException("Personal card not found"));
 
-        // 기존 데이터 유지
         personal.setId(existingPersonal.getId());
         personal.setQrHash(existingPersonal.getQrHash());
         personal.setUser(user);
@@ -75,17 +63,10 @@ public class PersonalController {
         return ResponseEntity.ok().build();
     }
 
-//    @GetMapping("/qr")
-//    public String showQrCode(Model model, Principal principal) {
-//        String username = principal.getName();
-//        User user = userRepository.findByUsername(username)
-//                .orElseThrow(() -> new IllegalArgumentException("User not found"));
-//
-//        Personal personal = personalRepository.findByUser(user)
-//                .orElseThrow(() -> new IllegalArgumentException("Personal card not found"));
-//
-//        model.addAttribute("personal", personal);
-//        return "qr-code";
-//    }
+    @DeleteMapping("/delete/{userId}")
+    public ResponseEntity<Void> deletePersonalCard(@PathVariable Long userId) {
+        personalService.deletePersonalCard(userId);
+        return ResponseEntity.ok().build();
+    }
 }
 
