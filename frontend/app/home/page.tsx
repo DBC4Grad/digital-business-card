@@ -8,6 +8,7 @@ import Header from '@/components/Header';
 import { useAuth } from '@/app/context/AuthContext';
 import { UserData } from '@/types/type';
 import CreateCard from '@/components/createCard';
+import SettingsPage from '@/components/settings';
 
 export default function BusinessCardApp() {
   const [activeTab, setActiveTab] = useState<'myCard' | 'cardsList' | 'settings' | 'createCard'>('myCard');
@@ -31,7 +32,12 @@ export default function BusinessCardApp() {
     const fetchUserData = async () => {
       if (user) {
         try {
-          const response = await fetch(`http://localhost:8080/users/username/${user.username}`);
+          const response = await fetch(`http://localhost:8080/users/username/${user.username}`, {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          });
           if (response.ok) {
             const data = await response.json();
             const hasValidPersonalCard = data.personal && Object.values(data.personal).some((value) => value);
@@ -83,12 +89,9 @@ export default function BusinessCardApp() {
           </>
         )}
         {activeTab === 'cardsList' && <CardsList />}
-        {activeTab === 'settings' && (
-          <div className="flex items-center justify-center h-full">
-            <p className="text-lg text-[#6a8d5d]">Settings Page</p>
-          </div>
-        )}
+        {activeTab === 'settings' && <SettingsPage />}
         {activeTab === 'createCard' && <CreateCard />}
+
         {/* `{user && activeTab === 'myCard' && <MyCard />}
         {user && activeTab === 'cardsList' && <CardsList />}
         {user && activeTab === 'settings' && (
