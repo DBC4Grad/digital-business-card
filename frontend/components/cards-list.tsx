@@ -5,7 +5,7 @@ import Image from 'next/image';
 import { Search } from 'lucide-react';
 import tmpProfile from '@/public/icons/tmp-profile.png';
 import { useEffect } from 'react';
-import { UserData } from '@/types/type';
+import { CardData, UserData } from '@/types/type';
 import { useAuth } from '@/app/context/AuthContext';
 
 export default function CardsList() {
@@ -20,17 +20,19 @@ export default function CardsList() {
   //   });
   // const [cards, setCards] = useState<UserData[]>([]);
 
-  const [cards, setCards] = useState<UserData>({} as UserData);
+  const [savedCards, setSavedCards] = useState<CardData[]>([] as CardData[]);
 
   useEffect(() => {
     async function fetchUserData(username: string) {
+      console.log('Fetching user data for username:', username);
       try {
-        const response = await fetch(`/api/users/username/${username}`);
+        const response = await fetch(`/users/username/${username}`);
+        console.log('Response:', response);
         if (!response.ok) {
           throw new Error('Failed to fetch user data');
         }
         const data: UserData = await response.json();
-        setCards(data); // Assuming you want to replace the cards with the fetched user data
+        setSavedCards(data.savedCards ?? ([] as CardData[])); // Assuming you want to replace the cards with the fetched user data
       } catch (error) {
         console.error(error);
       }
@@ -80,7 +82,7 @@ export default function CardsList() {
         {viewMode === 'list' ? (
           // List View
           <div className="w-full space-y-4">
-            {cards?.savedCards?.map((card, index) => (
+            {savedCards.map((card, index) => (
               <div
                 key={index}
                 className="w-full bg-white rounded-[20px] shadow-[4px_8px_8px_0px_rgba(0,0,0,0.25)] p-4 flex items-center"
@@ -112,7 +114,7 @@ export default function CardsList() {
         ) : (
           // Grid View
           <div className="w-full grid grid-cols-2 gap-4">
-            {cards?.savedCards?.map((card, index) => (
+            {savedCards.map((card, index) => (
               <div
                 key={index}
                 className="bg-white rounded-[20px] shadow-[-4px_8px_8px_0px_rgba(0,0,0,0.25)] p-4 flex flex-col items-center"

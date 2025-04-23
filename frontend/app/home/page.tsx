@@ -25,13 +25,13 @@ export default function BusinessCardApp() {
   }); // State to hold user data
   const { user } = useAuth();
   // 임시로 true로 해놓음
-  const [hasPersonalCard, setHasPersonalCard] = useState<boolean | null>(true);
+  const [hasPersonalCard, setHasPersonalCard] = useState<boolean | null>(true); // State to check if the user has a personal card
 
   useEffect(() => {
     const fetchUserData = async () => {
       if (user) {
         try {
-          const response = await fetch(`/api/users/username/${user.username}`);
+          const response = await fetch(`http://localhost:8080/users/username/${user.username}`);
           if (response.ok) {
             const data = await response.json();
             const hasValidPersonalCard = data.personal && Object.values(data.personal).some((value) => value);

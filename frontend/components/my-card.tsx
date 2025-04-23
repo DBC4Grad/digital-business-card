@@ -20,14 +20,12 @@ export default function MyCard({ userData }: { userData: UserData }) {
           {/* Name */}
           <div className="flex items-center gap-3">
             <Smile className="w-6 h-6 text-[#6a8d5d]" />
-            {/* <span className="text-lg font-bold">김카르디 Cardly Kim</span> */}
             <span className="text-lg font-bold">{username}</span>
           </div>
 
           {/* 소속 */}
           <div className="flex items-center gap-3">
             <FileText className="w-6 h-6 text-[#6a8d5d]" />
-            {/* <span className="font-semibold">성균관대학교 / 4학년</span> */}
             <span className="font-semibold">
               {personal?.company} / {personal?.position}
             </span>
@@ -36,21 +34,18 @@ export default function MyCard({ userData }: { userData: UserData }) {
           {/* Mobile */}
           <div className="flex items-center gap-3">
             <Smartphone className="w-6 h-6 text-[#6a8d5d]" />
-            {/* <span className="font-semibold">010-1234-5678</span> */}
             <span className="font-semibold">{personal?.phoneContact}</span>
           </div>
 
           {/* Phone */}
           <div className="flex items-center gap-3">
             <Phone className="w-6 h-6 text-[#6a8d5d]" />
-            {/* <span className="font-semibold">02-9876-5432</span> */}
             <span className="font-semibold">{personal?.officeContact}</span>
           </div>
 
           {/* Email */}
           <div className="flex items-center gap-3">
             <Mail className="w-6 h-6 text-[#6a8d5d]" />
-            {/* <span className="font-semibold">cardly@gmail.com</span> */}
             <span className="font-semibold">{personal?.email}</span>
           </div>
         </div>
