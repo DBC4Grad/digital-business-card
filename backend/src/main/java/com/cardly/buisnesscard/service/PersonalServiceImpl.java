@@ -21,7 +21,7 @@ public class PersonalServiceImpl implements PersonalService {
     @Transactional
     public Personal createOrUpdatePersonalCard(Long userId, Personal personal) {
         User user = userService.getUserById(userId);
-//        personal.setUser(user);
+        personal.setUser(user);
         return personalRepository.save(personal);
     }
 
