@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next';
 import 'pretendard/dist/web/variable/pretendardvariable-dynamic-subset.css';
 import './globals.css';
 import { AuthProvider } from './context/AuthContext';
+import { PersonalCardProvider } from './context/PersonalCardContext';
 
 export const metadata: Metadata = {
   title: 'Digital Business Card',
@@ -25,7 +26,9 @@ export default function RootLayout({
     <html lang="en">
       <body className="min-h-screen">
         <AuthProvider>
-          <main className="max-w-md mx-auto w-full min-h-screen">{children}</main>
+          <PersonalCardProvider>
+            <main className="max-w-md mx-auto w-full min-h-screen">{children}</main>
+          </PersonalCardProvider>
         </AuthProvider>
       </body>
     </html>

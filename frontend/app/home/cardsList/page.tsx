@@ -2,37 +2,29 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
-import { Search } from 'lucide-react';
 import tmpProfile from '@/public/icons/tmp-profile.png';
 import { useEffect } from 'react';
 import { CardData, UserData } from '@/types/type';
 import { useAuth } from '@/app/context/AuthContext';
+import { Plus } from 'lucide-react';
 
 export default function CardsList() {
   const [viewMode, setViewMode] = useState<'list' | 'grid'>('list');
   const { user } = useAuth();
-
-  // Mock data for the cards list
-  //   const cards = Array(20).fill({
-  //     name: '김카르디 Cardly Kim',
-  //     school: '성균관대학교 4학년',
-  //     email: 'cardly@gmail.com',
-  //   });
-  // const [cards, setCards] = useState<UserData[]>([]);
-
   const [savedCards, setSavedCards] = useState<CardData[]>([] as CardData[]);
+  const [searchUsername, setSearchUsername] = useState<string>(''); // State for input value
+  const [errorMessage, setErrorMessage] = useState<string | null>(null); // State for error messages
+  const [triggerFetch, setTriggerFetch] = useState<boolean>(false); // State to re-trigger useEffect
 
   useEffect(() => {
     async function fetchUserData(username: string) {
-      console.log('Fetching user data for username:', username);
       try {
-        const response = await fetch(`http://localhost:8080/users/username/${username}`);
-        console.log('Response:', response);
+        const response = await fetch(`http://localhost:8080/api/users/username/${username}`);
         if (!response.ok) {
           throw new Error('Failed to fetch user data');
         }
         const data: UserData = await response.json();
-        setSavedCards(data.savedCards ?? ([] as CardData[])); // Assuming you want to replace the cards with the fetched user data
+        setSavedCards(data.savedCards ?? ([] as CardData[]));
       } catch (error) {
         console.error(error);
       }
@@ -41,7 +33,37 @@ export default function CardsList() {
     if (user?.username) {
       fetchUserData(user.username);
     }
-  }, [user]);
+  }, [user, triggerFetch]); // Add triggerFetch to dependency array
+
+  const handleSearch = async () => {
+    if (!searchUsername.trim()) {
+      setErrorMessage('Please enter a username.');
+      return;
+    }
+
+    try {
+      const response = await fetch(`http://localhost:8080/saved/by-username?username=${searchUsername}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include', // Include session cookies
+      });
+
+      if (response.ok) {
+        setSearchUsername(''); // Clear the input field
+        setTriggerFetch((prev) => !prev); // Toggle triggerFetch to re-trigger useEffect
+        setErrorMessage(null); // Clear any previous error messages
+      } else if (response.status === 409) {
+        setErrorMessage('This card is already saved.');
+      } else {
+        setErrorMessage('Failed to add card. User not found or other error.');
+      }
+    } catch (error) {
+      console.error('Error adding card:', error);
+      setErrorMessage('An error occurred while adding the card.');
+    }
+  };
 
   return (
     <div className="w-full h-full flex flex-col">
@@ -49,11 +71,16 @@ export default function CardsList() {
       <div className="sticky top-0 bg-[#e8f2dd] z-10 w-full px-4 py-2">
         <div className="w-full flex justify-between items-center">
           <div className="relative w-[60%]">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
             <input
               type="text"
-              placeholder="Search"
+              placeholder="Add card by username"
+              value={searchUsername}
+              onChange={(e) => setSearchUsername(e.target.value)}
               className="w-full pl-10 pr-4 py-2 bg-white rounded-full border-none focus:outline-none focus:ring-2 focus:ring-[#a0b58b]"
+            />
+            <Plus
+              className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5 cursor-pointer"
+              onClick={handleSearch}
             />
           </div>
           <div className="flex gap-2">
@@ -76,6 +103,9 @@ export default function CardsList() {
           </div>
         </div>
       </div>
+
+      {/* Error Message Display */}
+      {errorMessage && <p className="text-center text-red-500 mt-2">{errorMessage}</p>}
 
       {/* Scrollable Cards List/Grid */}
       <div className="flex-1 overflow-y-auto px-4 pb-14">

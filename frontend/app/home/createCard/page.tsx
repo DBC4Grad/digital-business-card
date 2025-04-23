@@ -2,9 +2,13 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+// import { useAuth } from '@/app/context/AuthContext';
+import { usePersonalCard } from '@/app/context/PersonalCardContext';
 
 export default function CreateCard() {
   const router = useRouter();
+  // const { user } = useAuth();
+  const { setHasPersonalCard } = usePersonalCard(); // Access shared state
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -38,18 +42,18 @@ export default function CreateCard() {
       });
 
       if (response.ok) {
-        router.push('/home');
+        setHasPersonalCard(true); // Update shared state
+        router.push('/home'); // Redirect to home page
       } else if (response.status === 401) {
         router.push('/login'); // 수동 리다이렉트
       } else {
         const error = await response.text();
         setMessage(`Error: ${error}`);
       }
-    } catch (error) {
+    } catch {
       setMessage('서버 연결 실패');
     }
   };
-
 
   return (
     <div className="w-full max-w-md mx-auto mt-10 p-6 bg-[#e8f2dd] rounded-lg shadow-md pb-40">

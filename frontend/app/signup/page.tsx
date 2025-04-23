@@ -20,20 +20,24 @@ export default function SignupPage() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ username, password }),
+        // credentials: 'include', // 쿠키나 인증 정보를 포함
       });
+      console.log('Response:', response);
 
       if (response.ok) {
         const data = await response.json();
-        setResultMessage(`User created successfully! ID: ${data.id}`);
+        setResultMessage(`User created successfully! Welcome, ${data.username}!`);
         setIsError(false);
       } else {
-        const error = await response.text();
-        setResultMessage(`Error: ${error}`);
+        // const error = await response.text();
+        // setResultMessage(`Error: ${error}`);
+        setResultMessage('An error occurred.');
         setIsError(true);
       }
     } catch (error: unknown) {
       if (error instanceof Error) {
-        setResultMessage(`Error: ${error.message}`);
+        // setResultMessage(`Error: ${error.message}`);
+        setResultMessage('An error occurred.');
       } else {
         setResultMessage('An unknown error occurred.');
       }
@@ -73,15 +77,12 @@ export default function SignupPage() {
           회원가입
         </button>
       </form>
-      {/* resultMessage -> 에러 메시지 */}
       {resultMessage && (
-        <div className={`mt-4 text-center ${isError ? 'text-red-500' : 'text-green-500'}`}>
-          회원가입에 실패했습니다.
-        </div>
+        <div className={`mt-4 text-center ${isError ? 'text-red-500' : 'text-green-500'}`}>{resultMessage}</div>
       )}
       {!isError && resultMessage && (
         <div className="mt-2 text-center">
-          <Link href="/login" className="text-[#6a8d5d] hover:underline">
+          <Link href="/" className="text-[#6a8d5d] hover:underline">
             로그인으로 이동
           </Link>
         </div>

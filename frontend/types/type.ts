@@ -8,6 +8,7 @@ export interface UserData {
     phoneContact: string;
     officeContact: string;
     email: string;
+    qrHash: string;
   };
   savedCards?: Array<CardData>;
 }

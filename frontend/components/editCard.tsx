@@ -23,7 +23,7 @@ export default function EditCard({ setEditCard }: { setEditCard: (value: boolean
     const fetchPersonalData = async () => {
       if (user) {
         try {
-          const response = await fetch(`http://localhost:8080/users/username/${user.username}`, {
+          const response = await fetch(`http://localhost:8080/api/users/username/${user.username}`, {
             method: 'GET',
             headers: {
               'Content-Type': 'application/json',
@@ -77,6 +77,7 @@ export default function EditCard({ setEditCard }: { setEditCard: (value: boolean
       const response = await fetch('http://localhost:8080/personal/edit', {
         method: 'POST',
         body: form,
+        credentials: 'include', // Include session cookies
       });
 
       if (response.ok) {

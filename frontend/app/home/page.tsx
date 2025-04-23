@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import MyCard from '@/components/my-card';
 import { useAuth } from '@/app/context/AuthContext';
+import { usePersonalCard } from '@/app/context/PersonalCardContext';
 import { UserData } from '@/types/type';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
@@ -20,17 +21,18 @@ export default function BusinessCardApp() {
       phoneContact: '',
       officeContact: '',
       email: '',
+      qrHash: '',
     },
-  }); // State to hold user data
+  });
   const { user } = useAuth();
-  // 임시로 true로 해놓음
-  const [hasPersonalCard, setHasPersonalCard] = useState<boolean | null>(null); // State to check if the user has a personal card
+  const { hasPersonalCard, setHasPersonalCard } = usePersonalCard(); // Access shared state
 
   useEffect(() => {
     const fetchUserData = async () => {
       if (user) {
         try {
-          const response = await fetch(`http://localhost:8080/users/username/${user.username}`, {
+          const response = await fetch(`http://localhost:8080/api/users/username/${user.username}`, {
+            // const response = await fetch(`http://localhost:8080/personal/${user.username}`, {
             method: 'GET',
             headers: {
               'Content-Type': 'application/json',
@@ -38,12 +40,10 @@ export default function BusinessCardApp() {
           });
           if (response.ok) {
             const data = await response.json();
-            const hasValidPersonalCard = data.personal && Object.values(data.personal).some((value) => value);
-            setHasPersonalCard(hasValidPersonalCard);
-            setUserData(data); // Save the data to state
-            // console.log('User data:', data);
-            // Check if the returned data has a valid `personal` property
-            setHasPersonalCard(hasValidPersonalCard);
+            // const hasValidPersonalCard = data.personal && Object.values(data.personal).some((value) => value);
+            const hasValidPersonalCard = Boolean(data.personal);
+            setHasPersonalCard(hasValidPersonalCard); // Update shared state
+            setUserData(data);
           } else {
             console.error('Failed to fetch user data');
           }
@@ -54,7 +54,7 @@ export default function BusinessCardApp() {
     };
 
     fetchUserData();
-  }, [user]);
+  }, [user, setHasPersonalCard]);
 
   return (
     <div
@@ -82,25 +82,4 @@ export default function BusinessCardApp() {
       )}
     </div>
   );
-
-  {
-    /* 애초에 로그인이 안되면 이 페이지들로 갈 일이 없기는 하지만, 임시로 밑에 화면 만들어놓음 */
-  }
-  {
-    /* {!user && activeTab === 'myCard' && (
-          <div className="flex items-center justify-center h-full">
-            <p className="text-lg text-[#6a8d5d]">Please log in to view your card.</p>
-          </div>
-        )}
-        {!user && activeTab === 'cardsList' && (
-          <div className="flex items-center justify-center h-full">
-            <p className="text-lg text-[#6a8d5d]">Please log in to view your cards.</p>
-          </div>
-        )}
-        {!user && activeTab === 'settings' && (
-          <div className="flex items-center justify-center h-full">
-            <p className="text-lg text-[#6a8d5d]">Please log in to access settings.</p>
-          </div>
-        )} */
-  }
 }

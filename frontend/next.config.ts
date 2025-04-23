@@ -5,6 +5,10 @@ import withPWA from 'next-pwa';
 
 const nextConfig = {
   /* config options here */
+  images: {
+    // remotePatterns: [new URL('https://assets.example.com/account123/**')],
+    domains: ['api.qrserver.com'], // for QR code
+  },
 };
 
 // require 이용????
