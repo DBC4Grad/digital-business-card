@@ -36,7 +36,7 @@ export default function CreateCard() {
     });
 
     try {
-      const response = await fetch('/personal/create', {
+      const response = await fetch('http://localhost:8080/personal/create', {
         method: 'POST',
         body: form,
       });

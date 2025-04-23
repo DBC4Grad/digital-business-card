@@ -14,7 +14,7 @@ export default function SignupPage() {
     const password = formData.get('password') as string;
 
     try {
-      const response = await fetch('/users', {
+      const response = await fetch('http://localhost:8080/users', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

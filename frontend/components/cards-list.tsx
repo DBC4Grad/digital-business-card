@@ -26,7 +26,7 @@ export default function CardsList() {
     async function fetchUserData(username: string) {
       console.log('Fetching user data for username:', username);
       try {
-        const response = await fetch(`/users/username/${username}`);
+        const response = await fetch(`http://localhost:8080/users/username/${username}`);
         console.log('Response:', response);
         if (!response.ok) {
           throw new Error('Failed to fetch user data');
