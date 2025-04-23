@@ -14,18 +14,30 @@ export default function LoginPage() {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
     const username = formData.get('username') as string;
-    const password = formData.get('password') as string;
+    // const password = formData.get('password') as string;
 
     try {
       const response = await fetch('/login', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/x-www-form-urlencoded',
         },
-        body: JSON.stringify({ username, password }),
+        body: formData.toString(),
+        redirect: 'follow',
       });
 
-      if (response.ok) {
+      // * 안되면 이 방법으로 시도해보기
+      // const response = await fetch('/login', {
+      //   method: 'POST',
+      //   headers: {
+      //     'Content-Type': 'application/json',
+      //   },
+      //   body: JSON.stringify({ username, password }),
+      //   redirect: 'follow',
+      // });
+
+      if (response.redirected || response.url.includes('/home')) {
+        // If the response is redirected, it means login was successful
         // Save login information in AuthContext
         login(username);
         // Redirect to the home page
