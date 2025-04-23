@@ -29,7 +29,7 @@ public class PersonalController {
     @GetMapping("/{userId}")
     public ResponseEntity<Personal> getPersonalCard(@PathVariable Long userId) {
         Personal personal = personalService.getPersonalCardByUserId(userId);
-        return ResponseEntity.ok(personal);
+        return ResponseEntity.ok().build();
     }
 
     @PostMapping("/create")
